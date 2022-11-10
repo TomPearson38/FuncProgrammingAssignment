@@ -41,12 +41,6 @@ module Enigma where
             reflected = reflect firstPass reflec
             encodedLetter = (passLeft r3 (passLeft r2 (passLeft r1 reflected newOff1) newOff2) newOff3)
 
-  --Sanitizes the input that is passed to enigma
-  cleanseInput :: Char -> Char
-  cleanseInput x
-    | isLetter x == False = ' '
-    | otherwise = toUpper x
-
   --Reflects the input given based upon the reflector
   reflect :: Char -> Reflector -> Char
   reflect x ((y, z):ys)
