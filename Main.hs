@@ -24,9 +24,13 @@ message2 = "YZCSDCVUFVJAAEMVILWRVSQZFCBPJFVYHUUPHLAPJMTMFNLURRADJFCBRBXBCUSSXVYW
 main = do
     print "First a test of encodeMessage: "
     print (encodeMessage "Here is a test input string." enigma1)
-    print "And another test of encodeMessage: "
-    print (encodeMessage "Here is a test input string." enigma2)
-    print "Then a test of longestMenu: "
-    print (longestMenu (zip crib1 message1))
-    print "And now a test of breakEnigma: "
-    printMaybe (breakEnigma (zip crib2 message2))
+    --print "And another test of encodeMessage: "
+    --print (encodeMessage "Here is a test input string." enigma2)
+    --print "Then a test of longestMenu: "
+    --print (longestMenu (zip crib1 message1))
+    --print "And now a test of breakEnigma: "
+    --printMaybe (breakEnigma (zip crib2 message2))
+
+
+test :: String -> String
+test ch = encodeMessage ch (SimpleEnigma rotor3 rotor2 rotor1 reflectorB (0,0,25))
