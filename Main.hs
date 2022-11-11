@@ -34,3 +34,6 @@ main = do
 
 test :: String -> String
 test ch = encodeMessage ch (SimpleEnigma rotor3 rotor2 rotor1 reflectorB (0,0,25))
+
+testStecker :: String -> String
+testStecker ch = encodeMessage ch (SteckeredEnigma rotor3 rotor2 rotor1 reflectorB (0,0,25) plugboard)

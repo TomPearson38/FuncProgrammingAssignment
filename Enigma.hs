@@ -30,7 +30,7 @@ module Enigma where
   8) Returns total result
   -}
   encodeMessage :: String -> Enigma -> String
-  encodeMessage [] (SimpleEnigma _ _ _ _ _) = []
+  encodeMessage [] _ = []
   encodeMessage (x:xs) (SimpleEnigma r1 r2 r3 reflec (off1, off2, off3)) = 
       if isLetter x then
        [encodedLetter] ++ encodeMessage xs (SimpleEnigma r1 r2 r3 reflec (newOff1, newOff2, newOff3))
@@ -40,6 +40,18 @@ module Enigma where
             firstPass = (passRight r1 (passRight r2 (passRight r3 (toUpper x) newOff3) newOff2) newOff1)
             reflected = reflect firstPass reflec
             encodedLetter = (passLeft r3 (passLeft r2 (passLeft r1 reflected newOff1) newOff2) newOff3)
+  encodeMessage (x:xs) (SteckeredEnigma r1 r2 r3 reflec (off1, off2, off3) steck) = 
+      if isLetter x then
+       [steckeredOutput] ++ encodeMessage xs (SteckeredEnigma r1 r2 r3 reflec (newOff1, newOff2, newOff3) steck)
+      else
+       encodeMessage xs (SteckeredEnigma r1 r2 r3 reflec (off1, off2, off3) steck)
+      where [newOff1, newOff2, newOff3] = rotateRotors r1 r2 r3 [off1, off2, off3]
+            steckeredInput = steckerPass (toUpper x) steck
+            firstPass = (passRight r1 (passRight r2 (passRight r3 steckeredInput newOff3) newOff2) newOff1)
+            reflected = reflect firstPass reflec
+            encodedLetter = (passLeft r3 (passLeft r2 (passLeft r1 reflected newOff1) newOff2) newOff3)
+            steckeredOutput = steckerPass encodedLetter steck
+
 
   --Reflects the input given based upon the reflector
   reflect :: Char -> Reflector -> Char
@@ -47,6 +59,17 @@ module Enigma where
     | x == y = z
     | x == z = y
     | otherwise = reflect x ys
+
+  --Steckers the input
+  steckerPass :: Char -> Stecker -> Char
+  steckerPass x ((y,z): [])
+    | x == y = z
+    | x == z = y
+    | otherwise = x
+  steckerPass x ((y,z): ys)
+    | x == y = z
+    | x == z = y
+    | otherwise = steckerPass x ys
 
   --Converts a position of a character to its character in the alphabet
   int2let :: Int -> Char
