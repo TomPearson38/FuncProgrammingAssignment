@@ -5,9 +5,12 @@ plugboard = [('F','T'),('D','U'),('V','A'),('K','W'),('H','Z'),('I','X')]
 enigma2 = (SteckeredEnigma rotor1 rotor2 rotor3 reflectorB (0,0,25) plugboard)
 crib1 = "WETTERVORHERSAGEBISKAYA"
 message1 = "RWIVTYRESXBFOGKUHQBAISE"
+--Crib is the plain part and message is the cipher
+
 
 crib2 = "TURINGBOMBEHASKELLSIMULATIONSTOP"
 message2 = "YZCSDCVUFVJAAEMVILWRVSQZFCBPJFVYHUUPHLAPJMTMFNLURRADJFCBRBXBCUSSXVYWAPQIRCUVVNODKELDMNNQHYFEFOZPBUIPWKPXIYPKQHMVOAVXFVDCKMZOULMTQNUFBVHFUSXYCYPWFKBYW"
+--We are going to ignore the rest of the message after the length of the crib
 
 {- Function that will print "No result!" if Maybe type contains Nothing, or the
  - contents of the "Just" part otherwise. -}
@@ -24,10 +27,10 @@ message2 = "YZCSDCVUFVJAAEMVILWRVSQZFCBPJFVYHUUPHLAPJMTMFNLURRADJFCBRBXBCUSSXVYW
 main = do
     print "First a test of encodeMessage: "
     print (encodeMessage "Here is a test input string." enigma1)
-    --print "And another test of encodeMessage: "
-    --print (encodeMessage "Here is a test input string." enigma2)
-    --print "Then a test of longestMenu: "
-    --print (longestMenu (zip crib1 message1))
+    print "And another test of encodeMessage: "
+    print (encodeMessage "Here is a test input string." enigma2)
+    print "Then a test of longestMenu: "
+    print (longestMenu (zip crib1 message1))
     --print "And now a test of breakEnigma: "
     --printMaybe (breakEnigma (zip crib2 message2))
 

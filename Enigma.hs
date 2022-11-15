@@ -117,11 +117,45 @@ module Enigma where
 
 {- Part 2: Finding the Longest Menu -}
 
-  type Menu = Bool -- the supplied type is not correct; fix it!
-  type Crib = Bool -- the supplied type is not correct; fix it!
+  type Menu = [Int] -- the supplied type is not correct; fix it!
+  type Crib = [(Char, Char)] -- the supplied type is not correct; fix it!
 
   longestMenu :: Crib -> Menu
-  longestMenu _ = False
+  longestMenu startingCrib = []
+
+  --startMenuSearch :: Crib -> Int -> Menu
+  --startMenuSearch currentCrib 
+
+  generateMenu :: Crib -> Int -> Menu
+  generateMenu currentCrib currentPosition = if (moreCharacters currentCrib) then 
+     [nextPosition] ++ (generateMenu newCrib nextPosition)
+     else []
+     where newCrib = removeCurrentCharacter currentCrib currentPosition 0
+           nextPosition = findNextLetter (findCurrentLetterPos currentPosition currentCrib 0) newCrib 0
+
+
+  findCurrentLetterPos :: Int -> Crib -> Int -> Char
+  findCurrentLetterPos pos ((y,_): xs) count
+    | pos == count = y
+    | otherwise = findCurrentLetterPos pos xs (count+1)
+
+  moreCharacters :: Crib -> Bool
+  moreCharacters ((currentCrib, _):[]) = if (isLetter currentCrib) == True then True else False
+  moreCharacters ((currentCrib, _):xs) = if (isLetter currentCrib) == True then True else moreCharacters xs
+
+  findNextLetter :: Char -> Crib -> Int -> Int
+  findNextLetter x ((y,z): []) count
+    | x == y = count
+    | otherwise = -1
+  findNextLetter x ((y,z): xs) count
+    | x == y = count
+    | otherwise = findNextLetter x xs (count+1)
+
+  removeCurrentCharacter :: Crib -> Int -> Int -> Crib
+  removeCurrentCharacter ((y,z): xs) position count
+    | count == position = (('#', '#'): xs)
+    | otherwise = [(y,z)] ++ removeCurrentCharacter xs (count+1) position
+
 
 {- Part 3: Simulating the Bombe -}
   
