@@ -7,6 +7,7 @@ module Enigma where
   import Data.Char  -- to use functions on characters
   import Data.Maybe -- breakEnigma uses Maybe type
   -- add extra imports if needed, but only standard library functions!
+  import Debug.Trace
 
 {- Part 1: Simulation of the Enigma -}
 
@@ -120,41 +121,72 @@ module Enigma where
   type Menu = [Int] -- the supplied type is not correct; fix it!
   type Crib = [(Char, Char)] -- the supplied type is not correct; fix it!
 
+  
   longestMenu :: Crib -> Menu
-  longestMenu startingCrib = []
+  longestMenu [] = []
+  longestMenu startingCrib = findLongestMenu startingCrib 0
 
-  --startMenuSearch :: Crib -> Int -> Menu
-  --startMenuSearch currentCrib 
+  findLongestMenu :: Crib -> Int -> Menu
+  findLongestMenu chosenCrib count = 
+    if (count == ((length chosenCrib) - 1)) then
+        generateNextStep chosenCrib count
+    else
+      if ((length currentMenu) > (length nextLongestMenu)) then
+        currentMenu
+      else
+        nextLongestMenu
+    where nextLongestMenu = findLongestMenu chosenCrib (count+1)
+          currentMenu = (generateNextStep chosenCrib count)
 
-  generateMenu :: Crib -> Int -> Menu
-  generateMenu currentCrib currentPosition = if (moreCharacters currentCrib) then 
-     [nextPosition] ++ (generateMenu newCrib nextPosition)
-     else []
-     where newCrib = removeCurrentCharacter currentCrib currentPosition 0
-           nextPosition = findNextLetter (findCurrentLetterPos currentPosition currentCrib 0) newCrib 0
 
+  generateNextStep :: Crib -> Int -> Menu
+  generateNextStep currentCrib (-1) = []
+  generateNextStep currentCrib currentPosition = 
+    if ((moreCharacters currentCrib) || ((length nextPositions) == 0)) then 
+      if ((length nextPositions) > 1) then
+        [currentPosition] ++ findBestPath newCrib nextPositions
+      else
+        [currentPosition] ++ (generateNextStep newCrib (extractData nextPositions))
+    else
+      []
+    where newCrib = removeCurrentCharacter currentCrib currentPosition 0
+          nextPositions = findNextLetter (findEncryptedValue currentPosition currentCrib 0) newCrib 0
 
-  findCurrentLetterPos :: Int -> Crib -> Int -> Char
-  findCurrentLetterPos pos ((y,_): xs) count
-    | pos == count = y
-    | otherwise = findCurrentLetterPos pos xs (count+1)
+  extractData :: [Int] -> Int
+  extractData [] = -1
+  extractData listOfInts = head listOfInts
+
+  findBestPath :: Crib -> [Int] -> Menu
+  findBestPath currentCrib (x:[]) = generateNextStep currentCrib x
+  findBestPath currentCrib (x:xs) =
+    if (length calculatedPath) > (length previousBestCalculatedPath) then
+      calculatedPath
+    else
+      previousBestCalculatedPath
+    where calculatedPath =  generateNextStep currentCrib x
+          previousBestCalculatedPath = findBestPath currentCrib xs
+
+  findEncryptedValue :: Int -> Crib -> Int -> Char
+  findEncryptedValue pos ((_,x): xs) count
+    | pos == count = x 
+    | otherwise = findEncryptedValue pos xs (count+1)
 
   moreCharacters :: Crib -> Bool
   moreCharacters ((currentCrib, _):[]) = if (isLetter currentCrib) == True then True else False
   moreCharacters ((currentCrib, _):xs) = if (isLetter currentCrib) == True then True else moreCharacters xs
 
-  findNextLetter :: Char -> Crib -> Int -> Int
+  findNextLetter :: Char -> Crib -> Int -> [Int]
   findNextLetter x ((y,z): []) count
-    | x == y = count
-    | otherwise = -1
+    | x == y = [count]
+    | otherwise = []
   findNextLetter x ((y,z): xs) count
-    | x == y = count
+    | x == y = [count] ++ findNextLetter x xs (count+1)
     | otherwise = findNextLetter x xs (count+1)
 
   removeCurrentCharacter :: Crib -> Int -> Int -> Crib
   removeCurrentCharacter ((y,z): xs) position count
     | count == position = (('#', '#'): xs)
-    | otherwise = [(y,z)] ++ removeCurrentCharacter xs (count+1) position
+    | otherwise = [(y,z)] ++ removeCurrentCharacter xs position (count+1)
 
 
 {- Part 3: Simulating the Bombe -}
@@ -199,3 +231,5 @@ module Enigma where
    -}
   alphaPos :: Char -> Int
   alphaPos c = (ord c) - ord 'A'
+
+  debug = flip trace

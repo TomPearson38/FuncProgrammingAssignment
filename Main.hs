@@ -5,6 +5,8 @@ plugboard = [('F','T'),('D','U'),('V','A'),('K','W'),('H','Z'),('I','X')]
 enigma2 = (SteckeredEnigma rotor1 rotor2 rotor3 reflectorB (0,0,25) plugboard)
 crib1 = "WETTERVORHERSAGEBISKAYA"
 message1 = "RWIVTYRESXBFOGKUHQBAISE"
+testCrib = (zip crib1 message1)
+testCrib2 = (zip crib2 message2)
 --Crib is the plain part and message is the cipher
 
 
