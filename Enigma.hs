@@ -38,9 +38,9 @@ module Enigma where
       else
        encodeMessage xs (SimpleEnigma r1 r2 r3 reflec (off1, off2, off3))
       where [newOff1, newOff2, newOff3] = rotateRotors r1 r2 r3 [off1, off2, off3]
-            firstPass = (passRight r1 (passRight r2 (passRight r3 (toUpper x) newOff3) newOff2) newOff1)
+            firstPass = (passLeft r1 (passLeft r2 (passLeft r3 (toUpper x) newOff3) newOff2) newOff1)
             reflected = reflect firstPass reflec
-            encodedLetter = (passLeft r3 (passLeft r2 (passLeft r1 reflected newOff1) newOff2) newOff3)
+            encodedLetter = (passRight r3 (passRight r2 (passRight r1 reflected newOff1) newOff2) newOff3)
   encodeMessage (x:xs) (SteckeredEnigma r1 r2 r3 reflec (off1, off2, off3) steck) = 
       if isLetter x then
        [steckeredOutput] ++ encodeMessage xs (SteckeredEnigma r1 r2 r3 reflec (newOff1, newOff2, newOff3) steck)
@@ -48,9 +48,9 @@ module Enigma where
        encodeMessage xs (SteckeredEnigma r1 r2 r3 reflec (off1, off2, off3) steck)
       where [newOff1, newOff2, newOff3] = rotateRotors r1 r2 r3 [off1, off2, off3]
             steckeredInput = steckerPass (toUpper x) steck
-            firstPass = (passRight r1 (passRight r2 (passRight r3 steckeredInput newOff3) newOff2) newOff1)
+            firstPass = (passLeft r1 (passLeft r2 (passLeft r3 steckeredInput newOff3) newOff2) newOff1)
             reflected = reflect firstPass reflec
-            encodedLetter = (passLeft r3 (passLeft r2 (passLeft r1 reflected newOff1) newOff2) newOff3)
+            encodedLetter = (passRight r3 (passRight r2 (passRight r1 reflected newOff1) newOff2) newOff3)
             steckeredOutput = steckerPass encodedLetter steck
 
 
@@ -91,11 +91,11 @@ module Enigma where
   --Letter is then converted to an int in order to search for that index in the rotor
   --Index of the rotor element is found and Char is returned
   --Char is unshifted ready for output into the next rotor
-  passRight :: Rotor -> Char -> Int -> Char
-  passRight (roto,_) ch shift = unShiftInput shift (roto!!(alphaPos (shiftInput shift ch)))
-
   passLeft :: Rotor -> Char -> Int -> Char
-  passLeft (roto,_) ch shift = unShiftInput shift (abc!!(findLetter roto (shiftInput shift ch) 0))
+  passLeft (roto,_) ch shift = unShiftInput shift (roto!!(alphaPos (shiftInput shift ch)))
+
+  passRight :: Rotor -> Char -> Int -> Char
+  passRight (roto,_) ch shift = unShiftInput shift (abc!!(findLetter roto (shiftInput shift ch) 0))
 
   findLetter :: [Char] -> Char -> Int -> Int
   findLetter (x:xs) letter count = if x == letter then count else findLetter xs letter (count+1)
