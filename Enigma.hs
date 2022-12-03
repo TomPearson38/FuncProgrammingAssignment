@@ -39,7 +39,7 @@ module Enigma where
        encodeMessage xs (SimpleEnigma r1 r2 r3 reflec (off1, off2, off3))
       where [newOff1, newOff2, newOff3] = rotateRotors r1 r2 r3 [off1, off2, off3]
             firstPass = (passLeft r1 (passLeft r2 (passLeft r3 (toUpper x) newOff3) newOff2) newOff1)
-            reflected = reflect firstPass reflec
+            reflected = reflectorFunction firstPass reflec
             encodedLetter = (passRight r3 (passRight r2 (passRight r1 reflected newOff1) newOff2) newOff3)
   encodeMessage (x:xs) (SteckeredEnigma r1 r2 r3 reflec (off1, off2, off3) steck) = 
       if isLetter x then
@@ -49,17 +49,17 @@ module Enigma where
       where [newOff1, newOff2, newOff3] = rotateRotors r1 r2 r3 [off1, off2, off3]
             steckeredInput = steckerPass (toUpper x) steck
             firstPass = (passLeft r1 (passLeft r2 (passLeft r3 steckeredInput newOff3) newOff2) newOff1)
-            reflected = reflect firstPass reflec
+            reflected = reflectorFunction firstPass reflec
             encodedLetter = (passRight r3 (passRight r2 (passRight r1 reflected newOff1) newOff2) newOff3)
             steckeredOutput = steckerPass encodedLetter steck
 
 
   --Reflects the input given based upon the reflector
-  reflect :: Char -> Reflector -> Char
-  reflect x ((y, z):ys)
+  reflectorFunction :: Char -> Reflector -> Char
+  reflectorFunction x ((y, z):ys)
     | x == y = z
     | x == z = y
-    | otherwise = reflect x ys
+    | otherwise = reflectorFunction x ys
 
   --Steckers the input
   steckerPass :: Char -> Stecker -> Char
