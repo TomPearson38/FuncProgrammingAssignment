@@ -17,6 +17,7 @@ module Enigma where
   type Stecker = [(Char, Char)]
   abc = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
   
+  
   data Enigma = SimpleEnigma Rotor Rotor Rotor Reflector Offsets
                 | SteckeredEnigma Rotor Rotor Rotor Reflector Offsets Stecker
 
@@ -95,10 +96,10 @@ module Enigma where
   passLeft (roto,_) ch shift = unShiftInput shift (roto!!(alphaPos (shiftInput shift ch)))
 
   passRight :: Rotor -> Char -> Int -> Char
-  passRight (roto,_) ch shift = unShiftInput shift (abc!!(findLetter roto (shiftInput shift ch) 0))
+  passRight (roto,_) ch shift = unShiftInput shift (abc!!(findLetterPosition roto (shiftInput shift ch) 0))
 
-  findLetter :: [Char] -> Char -> Int -> Int
-  findLetter (x:xs) letter count = if x == letter then count else findLetter xs letter (count+1)
+  findLetterPosition :: [Char] -> Char -> Int -> Int
+  findLetterPosition (x:xs) letter count = if x == letter then count else findLetterPosition xs letter (count+1)
 
   --Rotates the provided rotors by 1
   --Compares each rotors pin position with the next value
