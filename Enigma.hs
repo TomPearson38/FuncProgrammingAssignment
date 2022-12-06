@@ -151,7 +151,7 @@ module Enigma where
     else
       []
     where newCrib = removeCurrentCharacter currentCrib currentPosition 0
-          nextPositions = findNextLetter (findEncryptedValue currentPosition currentCrib 0) newCrib 0
+          nextPositions = findNextLetter (findCipheredValue currentPosition currentCrib 0) newCrib 0
 
   extractData :: [Int] -> Int
   extractData [] = -1
@@ -167,20 +167,20 @@ module Enigma where
     where calculatedPath =  generateNextStep currentCrib x
           previousBestCalculatedPath = findBestPath currentCrib xs
 
-  findEncryptedValue :: Int -> Crib -> Int -> Char
-  findEncryptedValue pos ((_,x): xs) count
+  findCipheredValue :: Int -> Crib -> Int -> Char
+  findCipheredValue pos ((_,x): xs) count
     | pos == count = x 
-    | otherwise = findEncryptedValue pos xs (count+1)
+    | otherwise = findCipheredValue pos xs (count+1)
 
   moreCharacters :: Crib -> Bool
   moreCharacters ((currentCrib, _):[]) = if (isLetter currentCrib) == True then True else False
   moreCharacters ((currentCrib, _):xs) = if (isLetter currentCrib) == True then True else moreCharacters xs
 
   findNextLetter :: Char -> Crib -> Int -> [Int]
-  findNextLetter x ((y,z): []) count
+  findNextLetter x ((y,_): []) count
     | x == y = [count]
     | otherwise = []
-  findNextLetter x ((y,z): xs) count
+  findNextLetter x ((y,_): xs) count
     | x == y = [count] ++ findNextLetter x xs (count+1)
     | otherwise = findNextLetter x xs (count+1)
 
